@@ -1,4 +1,3 @@
-// he hospital model aahe geojson support karnara
 const bcrypt = require("bcryptjs")
 const mongoose = require('mongoose');
 
@@ -49,6 +48,26 @@ const hospSchema = new mongoose.Schema({
   availableBeds: {
     type: Number,
     default: 0,
+  },
+
+  contactNumber: {
+    type: String,
+    required: true
+  },
+
+  rescScore:{
+    total:{
+      type:Number,
+      default:0
+    },
+    accepted :{
+      type:Number,
+      default:0
+    },
+    score:{
+      type:Number,
+      default:0
+    }
   },
 
   slots: [
