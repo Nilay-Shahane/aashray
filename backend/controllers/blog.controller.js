@@ -1,4 +1,4 @@
-const { Blog } = require("../models/blogs.models.js");
+const {Blog} = require("../models/blogs.model.js");
 const cloudinary = require("cloudinary").v2;
 
 const createBlog = async(req,res) => {
@@ -10,9 +10,7 @@ const createBlog = async(req,res) => {
         {
             return res.status(400).json({message:"all fields are required"});
         }
-
-
-
+        
         const result = await cloudinary.uploader.upload(req.file.path,{
           folder:"blogs"
         });
