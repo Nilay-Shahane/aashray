@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const {User} = require("../models/user.model.js")
 const {HospMod} = require("../models/hospital.model.js")
 const {Admin} = require("../models/admin.model.js");
+let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js')
 
 const optionalAuth = async (req, res, next) => {
   const authHeader = req.headers.authorization;

@@ -1,33 +1,66 @@
 const jwt = require("jsonwebtoken")
 const {HospMod} = require("../models/hospital.model.js")
+let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js')
 
-const HospAuth = async(req,res,next) => {
-    
-    const auth = req.headers.authorization;
-    if(!auth) {
-        return res.status(401).json("hosp token not found")
+//auth------------------------------------------------------------------
+const HospAuth = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  req.access= ''
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Please authenticate." });
+  }
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
+
+    const user = await HospitalModel.findById(decoded._id);
+    if (!user) {
+        console.log('UserNotFound')
+      return res.status(404).json({ error: "Hospital not found." });
     }
 
-    const token = req.headers.authorization.split(' ')[1];
-    if(!token) {
-        return res.status(401).json("unauthorised")
-    }
+    req.user = decoded;
+    return next();
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      console.log("Access token expired");
 
-    try {
-        const decoded = await jwt.verify(token,process.env.JWT_SECRET)
-        const hosp = await HospMod.findById(decoded._id).select('-password');
+      const refreshToken = req.cookies.refreshToken;
+      if (!refreshToken) {
+        return res.status(401).json({ error: "Session expired. Please log in again." });
+      }
 
-        if(!hosp) {
-            return res.status(401).json("invalid token")
+      try {
+        const decodedRefresh = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+
+        const user = await HospitalModel.findById(decodedRefresh._id);
+        if (!user) {
+          return res.status(404).json({ error: "User not found via refresh." });
+        }
+         
+        let payload = {
+        _id: user._id,
+        username:user.username,
+        role:"hospital"
         }
 
-        req.hosp = hosp;
-        next();
+        const newAccessToken = genAccessToken(payload);
+
+        req.access = newAccessToken;
+        req.hosp = { _id: user._id , role:"hospital"} ; // payload??
+        return next();
+      } catch (refreshErr) {
+        console.log("Error in refresh token", refreshErr);
+        return res.status(401).json({ error: "Invalid refresh token. Please log in again." });
+      }
     }
-    catch(err) {
-        console.log(err)
-        return res.status(501).json("server errir")
-    }
-}
+
+    console.log("Invalid access token");
+    return res.status(401).json({ error: "Invalid access token." });
+  }
+};
 
 module.exports = {HospAuth}

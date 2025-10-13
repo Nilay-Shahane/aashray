@@ -1,26 +1,59 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/user.model');
+const UserModel = require('../models/user.model');
+let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js')
 
+//auth------------------------------------------------------------------
 const userAuth = async (req, res, next) => {
-  let token;
-  if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-    try 
-    {
-      token = req.headers.authorization.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select('-password');
-      
-      if (!req.user) {
-         return res.status(401).json({ message: 'Not authorized, user not found.' });
-      }
-      
-      next();
-    } catch (error) {
-      return res.status(401).json({ message: 'Not authorized, token failed.' });
-    }
+  const authHeader = req.headers.authorization;
+  req.access= ''
+
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Please authenticate." });
   }
-  if (!token) {
-    return res.status(401).json({ message: 'Not authorized, no token provided.' });
+
+  const token = authHeader.split(" ")[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
+
+    const user = await UserModel.findById(decoded._id);
+    if (!user) {
+        console.log('UserNotFound')
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    req.user = decoded;
+    return next();
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      console.log("Access token expired");
+
+      const refreshToken = req.cookies.refreshToken;
+      if (!refreshToken) {
+        return res.status(401).json({ error: "Session expired. Please log in again." });
+      }
+
+      try {
+        const decodedRefresh = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
+
+        const user = await UserModel.findById(decodedRefresh._id);
+        if (!user) {
+          return res.status(404).json({ error: "User not found via refresh." });
+        }
+
+        const newAccessToken = genAccessToken(user._id);
+
+        req.access = newAccessToken;
+        req.user = { _id: user._id };
+        return next();
+      } catch (refreshErr) {
+        console.log("Error in refresh token", refreshErr);
+        return res.status(401).json({ error: "Invalid refresh token. Please log in again." });
+      }
+    }
+
+    console.log("Invalid access token");
+    return res.status(401).json({ error: "Invalid access token." });
   }
 };
 
