@@ -295,4 +295,4 @@ const getHospitalByID = async (req,res) => {
     }
 }
 
-module.exports={signUpNewHosp,login,authorization,deleteAcc,updateAcc,addslot,searchHosp,getHosp ,getHospitalByID,deleteSlot}
+module.exports={signUpNewHosp,login,deleteAcc,updateAcc,addslot,searchHosp,getHosp ,getHospitalByID,deleteSlot}

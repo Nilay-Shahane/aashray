@@ -1,17 +1,17 @@
 const express = require("express");
 const { getBlogs, createBlog, toggleLike } = require("../controllers/blog.controller.js");
 const multer = require("multer");
-const {jwtAuthMiddleware} = require("../middleware/UserAuth.js");
-const {optionalAuth} = require("../middleware/optionalAuth.js")
-const {anyUserAuth} = require("../middleware/anyUserAuth.js")
+const {userAuth} = require("../middlewares/userAuth.js");
+const {optionalAuth} = require("../middlewares/optionalAuth.js")
+
 
 const storage = multer.diskStorage({});
 const upload = multer({storage})
 
-const router = express.Router();
+const blogRouter = express.Router();
 
-router.get("/all",optionalAuth,getBlogs);
-router.post("/create",jwtAuthMiddleware,upload.single("image"),createBlog);
-router.patch("/:id/toggleLike",anyUserAuth,toggleLike)
+blogRouter.get("/all",optionalAuth,getBlogs);
+blogRouter.post("/create",userAuth,upload.single("image"),createBlog);
+blogRouter.patch("/:id/toggleLike",optionalAuth,toggleLike)
 
 module.exports = router;
