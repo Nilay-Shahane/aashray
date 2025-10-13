@@ -278,4 +278,4 @@ const bookSlot = async(req,res)=>{
 const getUserProfile = async (req, res) => {
   res.status(200).json(req.user);
 };
-module.exports={signUpNewUser,login,authorization,deleteAcc,updateAcc,getCurrentUser,nearByHosp,bookSlot,getUserProfile}
+module.exports={signUpNewUser,login,deleteAcc,updateAcc,getCurrentUser,nearByHosp,bookSlot,getUserProfile}
