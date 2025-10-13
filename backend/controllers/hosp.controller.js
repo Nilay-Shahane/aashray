@@ -7,21 +7,8 @@ const axios = require('axios')
 
 const {HospMod} = require('../models/hospital.model.js')
 let {locnDecoder} = require('../middlewares/locnDecoder.js')
+let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js')
 
-
-
-
-let genAccessToken = async (payload)=>{
-    return jwt.sign(payload,process.env.ACCESS_SECRET,{
-        expiresIn: '1d'
-    })
-}
-
-let genRefreshToken =  async (payload) =>{
-    return jwt.sign(payload,process.env.REFRESH_SECRET,{
-        expiresIn: '30d'
-    })
-}
 
 
  let crypter = async (password) =>{
@@ -159,66 +146,7 @@ const login = async (req, res) =>{
     }
 }
 
-//auth------------------------------------------------------------------
-const authorization = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  req.access= ''
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Please authenticate." });
-  }
-
-  const token = authHeader.split(" ")[1];
-
-  try {
-    const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
-
-    const user = await HospitalModel.findById(decoded._id);
-    if (!user) {
-        console.log('UserNotFound')
-      return res.status(404).json({ error: "Hospital not found." });
-    }
-
-    req.user = decoded;
-    return next();
-  } catch (err) {
-    if (err.name === "TokenExpiredError") {
-      console.log("Access token expired");
-
-      const refreshToken = req.cookies.refreshToken;
-      if (!refreshToken) {
-        return res.status(401).json({ error: "Session expired. Please log in again." });
-      }
-
-      try {
-        const decodedRefresh = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
-
-        const user = await HospitalModel.findById(decodedRefresh._id);
-        if (!user) {
-          return res.status(404).json({ error: "User not found via refresh." });
-        }
-         
-        let payload = {
-        _id: user._id,
-        username:user.username,
-        role:"hospital"
-        }
-
-        const newAccessToken = genAccessToken(payload);
-
-        req.access = newAccessToken;
-        req.user = { _id: user._id , role:"hospital"} ; // payload??
-        return next();
-      } catch (refreshErr) {
-        console.log("Error in refresh token", refreshErr);
-        return res.status(401).json({ error: "Invalid refresh token. Please log in again." });
-      }
-    }
-
-    console.log("Invalid access token");
-    return res.status(401).json({ error: "Invalid access token." });
-  }
-};
 
 //delete------------------------------------------------------------------
 const deleteAcc = (req,res)=>{
