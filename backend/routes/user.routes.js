@@ -19,4 +19,4 @@ userRouter.delete('/deleteUser',userAuth,deleteAcc)
 userRouter.patch('/userUpdateAcc',userAuth,updateAcc)
 userRouter.get('/profile', getUserProfile);
 
-module.exports = {userRouter}
+module.exports = userRouter

@@ -1,6 +1,6 @@
 let express = require('express')
 let {topFive, sameAnimal, deleteReq} = require('../controllers/resc.controller')
-let rescRouter = express.Router()
+const rescRouter = express.Router()
 let multer = require('multer')
 
 let cloudinary = require('cloudinary').v2
@@ -23,4 +23,4 @@ rescRouter.post('/top',recep.single('file'),topFive)
 rescRouter.post('/initialReq',sameAnimal)
 rescRouter.post('/deleteReq',deleteReq)
 
-module.exports={rescRouter}
+module.exports = rescRouter

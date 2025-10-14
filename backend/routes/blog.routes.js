@@ -14,4 +14,4 @@ blogRouter.get("/all",optionalAuth,getBlogs);
 blogRouter.post("/create",userAuth,upload.single("image"),createBlog);
 blogRouter.patch("/:id/toggleLike",optionalAuth,toggleLike)
 
-module.exports = router;
+module.exports = blogRouter;
