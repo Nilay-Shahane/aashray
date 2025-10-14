@@ -42,4 +42,4 @@ productRouter.put('/:id',userAuth, admin, updateProduct)
 productRouter.delete('/:id',userAuth, admin, deleteProduct);
 
 
-module.exports = {productRouter};
+module.exports = productRouter;

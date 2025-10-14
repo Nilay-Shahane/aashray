@@ -9,4 +9,4 @@ orderRouter.route('/').post(userAuth, addOrderItems).get(userAuth, admin, getAll
 orderRouter.route('/myorders').get(userAuth, getMyOrders);
 orderRouter.route('/:id').get(userAuth, getOrderById);
 
-module.exports = {orderRouter};
+module.exports = orderRouter;

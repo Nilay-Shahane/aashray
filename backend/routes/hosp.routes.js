@@ -17,4 +17,4 @@ hospRouter.patch('/hospUpdateAcc',HospAuth,updateAcc)
 hospRouter.post('/acceptReq',acceptReq)
 hospRouter.post('/updateStatus',updateStatus)
 
-module.exports = {hospRouter}
+module.exports = hospRouter

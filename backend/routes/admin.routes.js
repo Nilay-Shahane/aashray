@@ -2,11 +2,11 @@ const express = require("express");
 const { loginAdmin,blogs,approve } = require("../controllers/admin.controller.js");
 const { adminAuth } = require("../middlewares/adminAuth.js")
 
-const router = express.Router();
+const adminRouter = express.Router();
 
-router.post("/login",loginAdmin);
-router.get("/blogs",adminAuth,blogs)
-router.patch("/blogs/:id/:action", adminAuth,approve);
+adminRouter.post("/login",loginAdmin);
+adminRouter.get("/blogs",adminAuth,blogs)
+adminRouter.patch("/blogs/:id/:action", adminAuth,approve);
 
 
-module.exports = router;
+module.exports = adminRouter;
