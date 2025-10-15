@@ -4,7 +4,9 @@ const jwt = require('jsonwebtoken')
 const nodemailer = require('nodemailer')
 require('dotenv').config()
 
-const {UserModel} = require('../models/user.model.js')
+const {UserModel} = require('../models/user.model')
+const {HospMod} = require("../models/hospital.model.js")
+
 let {locnDecoder} = require('../middlewares/locnDecoder.js')
 let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js')
 
@@ -55,8 +57,8 @@ let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js'
 
     }
 
-    let accessToken =   await genAccessToken(payload)
-    let refreshToken =  await genRefreshToken(payload)
+    let accessToken = await genAccessToken(payload)
+    let refreshToken = await genRefreshToken(payload)
 
     res.cookie('refreshToken',refreshToken,{
         httpOnly:false, 
@@ -123,7 +125,8 @@ const login = async (req, res) =>{
     let payload = {
         _id: loginUser._id,
         username:loginUser.username,
-        role:"hospital",
+        role:"user",
+        isBlogger:loginUser.isBlogger,
         isSeller: loginUser.isSeller
     }
         let accessToken = await genAccessToken(payload)
@@ -233,6 +236,7 @@ const nearByHosp = async (req, res) =>{
 const bookSlot = async(req,res)=>{
   try {
     const {username,time,petName, species, age, ownerName, contact}=req.body;
+    const bookingUser = req.user;
     if(!username || !time){
       return res.status(400).json({message:"Slot time is required"});
     }
@@ -247,7 +251,7 @@ const bookSlot = async(req,res)=>{
       return res.status(400).json({message:"Hosp not found"})
     }
 
-    const slotNo = hospital.slots.findIndex(slot=>slot.time===time)
+    const slotNo = hospital.slots.findIndex(slot => slot.slotDateTime.toISOString() === new Date(time).toISOString())
 
     if(slotNo === -1){
       return res.status(404).json({message:"slot not found"})
@@ -263,7 +267,8 @@ const bookSlot = async(req,res)=>{
       species,
       age,
       ownerName,
-      contact
+      contact,
+      bookedBy: bookingUser._id
     };
     const updateHosp = await hospital.save();
 

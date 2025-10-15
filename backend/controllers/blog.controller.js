@@ -1,9 +1,13 @@
-const {Blog} = require("../models/blogs.model.js");
+const { Blog } = require("../models/blogs.model.js");
+const {UserModel} = require("../models/user.model.js")
 const cloudinary = require("cloudinary").v2;
 
 const createBlog = async(req,res) => {
     try {
-        console.log("Logged-in user ID:", req.user._id)
+        if (!req.user.isBlogger) {
+          return res.status(403).json({ message: "Forbidden: You do not have permission to create a blog." });
+        }
+        
         const {title,content} = req.body;
 
         if(!title || !content || !req.file)
@@ -23,11 +27,11 @@ const createBlog = async(req,res) => {
               url:result.secure_url,
               public_id:result.public_id
             },
-            isApproved: false,
+            isApproved:true
         })
 
         await blog.save();    
-        res.status(201).json({message:"Blog submitted successfully"})
+        res.status(201).json({message:"Blog publushed successfully"})
     }
     catch(err) {
     res.status(500).json({success: false,message: "Server error",statusCode: 500,});
