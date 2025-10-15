@@ -1,8 +1,6 @@
 const jwt = require("jsonwebtoken");
-const {User} = require("../models/user.model.js")
+const {UserModel} = require("../models/user.model.js")
 const {HospMod} = require("../models/hospital.model.js")
-const {Admin} = require("../models/admin.model.js");
-let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js')
 
 const optionalAuth = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -14,12 +12,11 @@ const optionalAuth = async (req, res, next) => {
   const token = authHeader.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
 
     let user =
-      (await User.findById(decoded.id).select("-password")) ||
-      (await HospMod.findById(decoded.id).select("-password")) ||
-      (await Admin.findById(decoded.id).select("-password"));
+      (await UserModel.findById(decoded._id).select("-password")) ||
+      (await HospMod.findById(decoded._id).select("-password"));
 
     if (!user) {
       return res.status(401).json({ message: "User not found" });
