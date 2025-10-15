@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
   gmap: {
     type: String,
     required:true,
-},
+  },
 
   location: {
      type: {
@@ -38,15 +38,22 @@ const userSchema = new mongoose.Schema({
      type: [Number],   
      required: true
      }
- },
+  },
+
+  isBlogger: {
+    type: Boolean,
+    default: false 
+  },
+
   contactNumber: {
      type: String,
      required: true
- },
+  },
   validResc:{
      type:Number,
      default:0
-}
+  }
+  
 }, {
   timestamps: true,
 });

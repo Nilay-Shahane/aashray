@@ -12,9 +12,9 @@ hospRouter.post('/add-slot',HospAuth,addslot);
 hospRouter.delete('/slots/:slotId', HospAuth, deleteSlot);
 hospRouter.get('/me',HospAuth,getHosp);
 hospRouter.get('/:id',getHospitalByID);
-// hospRouter.delete('/deleteHosp',HospAuth,deleteAcc)
-// hospRouter.patch('/hospUpdateAcc',HospAuth,updateAcc)
-// hospRouter.post('/acceptReq',acceptReq)
-// hospRouter.post('/updateStatus',updateStatus)
+hospRouter.delete('/deleteHosp',HospAuth,deleteAcc)
+hospRouter.patch('/hospUpdateAcc',HospAuth,updateAcc)
+hospRouter.post('/acceptReq',acceptReq)
+hospRouter.post('/updateStatus',updateStatus)
 
 module.exports = hospRouter
