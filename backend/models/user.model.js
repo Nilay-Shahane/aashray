@@ -18,6 +18,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide a password.'],
   },
+
+isSeller: {
+    type: Boolean,
+    default: false,
+},
 //   role: {
 //     type: String,
 //     enum: ['customer', 'admin'],

@@ -25,12 +25,12 @@ const adminAuth = async (req, res, next) => {
 
 //------------------------------- anoushka admin ------------------------------------------//
 
-const admin = (req, res, next) => {
-  if (req.user && req.user.role === 'admin') {                                            
+const seller = (req, res, next) => {
+  if (req.user && req.user.isSeller) {                                            
     next(); 
   } else {
-    res.status(403).json({ message: 'Not authorized. Admin access required.' });
+    res.status(403).json({ message: 'Not authorized. Seller account required.' });
   }
 };
 
-module.exports = { adminAuth,admin };
+module.exports = { adminAuth,seller };

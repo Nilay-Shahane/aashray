@@ -3,7 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const { createProduct,getAllProducts,getProductById,updateProduct,deleteProduct } = require('../controllers/product.controller.js');
 const { userAuth } = require("../middlewares/userAuth.js")
-const { admin,adminAuth } = require("../middlewares/adminAuth.js")
+const { seller,adminAuth } = require("../middlewares/adminAuth.js")
 
 
 const storage = multer.diskStorage({
@@ -37,9 +37,9 @@ productRouter.get('/:id', getProductById);
 
 //for admin
 // productRouter.post('/', userAuth, admin, createProduct);
-productRouter.post('/', userAuth, admin, upload.single('image'), createProduct);   //change admin -> adminAuth
-productRouter.put('/:id',userAuth, admin, updateProduct)    
-productRouter.delete('/:id',userAuth, admin, deleteProduct);
+productRouter.post('/', userAuth, seller, upload.single('image'), createProduct);   //change admin -> adminAuth
+productRouter.put('/:id',userAuth, seller, updateProduct)    
+productRouter.delete('/:id',userAuth, seller, deleteProduct);
 
 
 module.exports = productRouter;
