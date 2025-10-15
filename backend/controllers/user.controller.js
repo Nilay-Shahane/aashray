@@ -22,7 +22,7 @@ let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js'
  let signUpNewUser = async (req,res)=>{
     let {username,password,email,contactNumber,gmap} = req.body
 
-    const exists = await User.findOne({username});
+    const exists = await UserModel.findOne({username});
 
     if(exists) {
       return res.status(400).json({message:"Username is already used"})
@@ -71,6 +71,9 @@ let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js'
                 auth: {
                   user: 'aashray43@gmail.com', // Your email
                   pass: 'ugyh baxz cnmo dcyk' // Your app password
+                },
+                tls: {
+                  rejectUnauthorized: false
                 }
               });
 
@@ -87,10 +90,10 @@ let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js'
                   return res.status(500).send('Error sending email');
                 } else {
                   console.log('Email sent: ' + info.response);
-                  
+                  res.json({accessToken,refreshToken})
                 }
               });
-              res.json({accessToken,refreshToken})
+              // res.json({accessToken,refreshToken})
             } catch (err) {
               console.error('Error saving data:', err);
               return res.status(500).send('Error saving data');
@@ -98,7 +101,7 @@ let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js'
         }catch(err){
             return console.log(err)
     }
-    console.log(`NEW USER REGISTERED ${req.username}`)
+    console.log(`NEW USER REGISTERED ${username}`)
  }
 
 //login---------------------------------------------------------------
@@ -111,6 +114,7 @@ const login = async (req, res) =>{
             "message":"User Not Found"
         })
     }
+
     let isValidPass = await bcrypt.compare(password,loginUser.password)
     if(!isValidPass){
         return res.json({"message":"Incorrect Password"})
@@ -121,8 +125,8 @@ const login = async (req, res) =>{
         username:loginUser.username,
         role:"hospital"
     }
-        let accessToken =   genAccessToken(payload)
-        let refreshToken =  genRefreshToken(payload)
+        let accessToken = await genAccessToken(payload)
+        let refreshToken = await genRefreshToken(payload)
 
         res.cookie('refreshToken',refreshToken,{
             httpOnly:false, 
@@ -130,7 +134,7 @@ const login = async (req, res) =>{
             maxAge: 7*24*60*60*1000, // expires in 7 days
             sameSite:'lax' // same site access and top urls access
         })
-
+        
         
         res.json({
             "message":"Login Successfull",
