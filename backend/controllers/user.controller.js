@@ -6,11 +6,9 @@ require('dotenv').config()
 
 const {UserModel} = require('../models/user.model')
 const {HospMod} = require("../models/hospital.model.js")
+
 let {locnDecoder} = require('../middlewares/locnDecoder.js')
 let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js')
-
-
-
 
 
  let crypter = async (password) =>{
@@ -18,6 +16,7 @@ let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js'
     let hash = await bcrypt.hash(password,salt)
     return hash
  }
+ 
  //newUser---------------------------------------------------------------
 
  let signUpNewUser = async (req,res)=>{
@@ -53,7 +52,9 @@ let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js'
     let payload = {
         _id: result._id,
         username:result.username,
-        role:"user"
+        role:"user",
+        isSeller: result.isSeller
+
     }
 
     let accessToken = await genAccessToken(payload)
@@ -125,7 +126,8 @@ const login = async (req, res) =>{
         _id: loginUser._id,
         username:loginUser.username,
         role:"user",
-        isBlogger:loginUser.isBlogger
+        isBlogger:loginUser.isBlogger,
+        isSeller: loginUser.isSeller
     }
         let accessToken = await genAccessToken(payload)
         let refreshToken = await genRefreshToken(payload)
