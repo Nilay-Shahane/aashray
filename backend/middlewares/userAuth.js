@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const UserModel = require('../models/user.model');
+const { UserModel } = require('../models/user.model.js');
 let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js')
 
 //auth------------------------------------------------------------------
@@ -22,7 +22,7 @@ const userAuth = async (req, res, next) => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    req.user = decoded;
+    req.user = user;
     return next();
   } catch (err) {
     if (err.name === "TokenExpiredError") {

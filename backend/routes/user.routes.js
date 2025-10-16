@@ -12,7 +12,7 @@ const userRouter = express.Router();
 userRouter.get("/profile",userAuth, getCurrentUser);
 userRouter.post("/nearby", userAuth, nearByHosp);
 userRouter.post("/register",signUpNewUser);
-userRouter.post("/book-slot",bookSlot);
+userRouter.post("/book-slot",userAuth,bookSlot);
 userRouter.post("/login",login);
 userRouter.post("/search",searchHosp);
 userRouter.delete('/deleteUser',userAuth,deleteAcc)

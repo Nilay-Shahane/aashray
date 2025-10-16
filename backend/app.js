@@ -9,7 +9,7 @@ const hospRoutes = require("./routes/hosp.routes.js");
 const adminRoutes = require("./routes/admin.routes.js");
 const orderRoutes = require("./routes/order.routes.js");
 const productRoutes = require("./routes/product.routes.js");
-const rescRoutes = require("./routes/resc.routes.js")
+const rescRoutes = require("./routes/resc.routes.js");
 
 
 const app = express();

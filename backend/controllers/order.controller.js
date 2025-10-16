@@ -1,4 +1,5 @@
 const {Order} = require('../models/order.model.js');
+const{UserModel} = require('../models/user.model.js');
 const {Product} = require('../models/product.model.js');
 
 
@@ -52,11 +53,11 @@ const addOrderItems = async (req, res) => {
 
 const getOrderById = async (req, res) => {
   try {
-    const order = await Order.findById(req.params.id).populate('user', 'name email');
+    const order = await Order.findById(req.params.id).populate('user','name email');
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
-    if (order.user._id.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+    if (order.user._id.toString() !== req.user._id.toString() && !req.user.isSeller) {
       return res.status(403).json({ message: 'Not authorized to view this order.' });
     }
 
