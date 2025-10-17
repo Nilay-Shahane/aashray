@@ -1,12 +1,12 @@
 const jwt = require('jsonwebtoken');
-const UserModel = require('../models/user.model');
+const {UserModel }= require('../models/user.model');
 let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js')
-
+require('dotenv').config()
 //auth------------------------------------------------------------------
 const userAuth = async (req, res, next) => {
   const authHeader = req.headers.authorization;
   req.access= ''
-
+  console.log(authHeader)
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({ error: "Please authenticate." });
   }
@@ -22,7 +22,7 @@ const userAuth = async (req, res, next) => {
       return res.status(404).json({ error: "User not found." });
     }
 
-    req.user = decoded;
+    req.user = user;
     return next();
   } catch (err) {
     if (err.name === "TokenExpiredError") {
@@ -44,7 +44,7 @@ const userAuth = async (req, res, next) => {
         const newAccessToken = genAccessToken(user._id);
 
         req.access = newAccessToken;
-        req.user = { _id: user._id };
+        req.user = user;
         return next();
       } catch (refreshErr) {
         console.log("Error in refresh token", refreshErr);

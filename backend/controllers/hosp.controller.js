@@ -36,9 +36,9 @@ let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js'
             coordinates:[parseFloat(match[2]),parseFloat(match[1])]
     }
 
-    const newHosp = new HospitalModel({
+    const newHosp = new HospMod({
         username ,
-        password: hashedPass ,
+        password: hashedPass ,gmap,
         email, contactNumber,location,address,
         licenseNumber,services,
         availableBeds: parseInt(availableBeds||"0",10)
@@ -105,7 +105,7 @@ let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js'
 const login = async (req, res) =>{
     let {username,password} = req.body
     try{
-    let loginUser = await HospitalModel.findOne({username})
+    let loginUser = await HospMod.findOne({username})
     if(!loginUser){
         return res.json({
             "message":"User Not Found"
@@ -151,7 +151,7 @@ const login = async (req, res) =>{
 //delete------------------------------------------------------------------
 const deleteAcc = (req,res)=>{
     const userId = req.user._id
-    HospitalModel.findByIdAndDelete(userId)
+    HospMod.findByIdAndDelete(userId)
     .then(()=>{
         res.send('Account deleted')
     })
@@ -167,7 +167,7 @@ const updateAcc = (req,res)=>{
     let updates = req.body
     console.log(updates)
 
-    HospitalModel.findByIdAndUpdate(userId,
+    HospMod.findByIdAndUpdate(userId,
         {
             $set : updates // updates is a json object which contains parameterToBeUpdates:Value
         },{

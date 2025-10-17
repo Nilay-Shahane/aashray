@@ -16,13 +16,13 @@ const HospAuth = async (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.ACCESS_SECRET);
 
-    const user = await HospitalModel.findById(decoded._id);
+    const user = await HospMod.findById(decoded._id);
     if (!user) {
         console.log('UserNotFound')
       return res.status(404).json({ error: "Hospital not found." });
     }
 
-    req.user = decoded;
+    req.user = user;
     return next();
   } catch (err) {
     if (err.name === "TokenExpiredError") {
@@ -36,7 +36,7 @@ const HospAuth = async (req, res, next) => {
       try {
         const decodedRefresh = jwt.verify(refreshToken, process.env.REFRESH_SECRET);
 
-        const user = await HospitalModel.findById(decodedRefresh._id);
+        const user = await HospMod.findById(decodedRefresh._id);
         if (!user) {
           return res.status(404).json({ error: "User not found via refresh." });
         }
@@ -50,7 +50,7 @@ const HospAuth = async (req, res, next) => {
         const newAccessToken = genAccessToken(payload);
 
         req.access = newAccessToken;
-        req.hosp = { _id: user._id , role:"hospital"} ; // payload??
+        req.user =  user // payload??
         return next();
       } catch (refreshErr) {
         console.log("Error in refresh token", refreshErr);
