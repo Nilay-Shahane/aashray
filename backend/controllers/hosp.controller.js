@@ -154,7 +154,7 @@ const login = async (req, res) =>{
 //delete------------------------------------------------------------------
 const deleteAcc = (req,res)=>{
     const userId = req.user._id
-    HospitalModel.findByIdAndDelete(userId)
+    HospMod.findByIdAndDelete(userId)
     .then(()=>{
         res.send('Account deleted')
     })
@@ -170,7 +170,7 @@ const updateAcc = (req,res)=>{
     let updates = req.body
     console.log(updates)
 
-    HospitalModel.findByIdAndUpdate(userId,
+    HospMod.findByIdAndUpdate(userId,
         {
             $set : updates // updates is a json object which contains parameterToBeUpdates:Value
         },{

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const adoptSchema = new mongoose.Schema({
-  name: {
+  owner_name: {
     type: String,
     required: true,
     trim: true

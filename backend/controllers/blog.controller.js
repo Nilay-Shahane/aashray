@@ -12,7 +12,7 @@ const createBlog = async(req,res) => {
 
         if(!title || !content || !req.file)
         {
-            return res.status(400).json({message:"all fields are required"});
+            return res.status(400).json({message:"all fields are"});
         }
         
         const result = await cloudinary.uploader.upload(req.file.path,{

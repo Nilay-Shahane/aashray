@@ -83,7 +83,7 @@ let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js'
                 from: 'aashray43@gmail.com', // Sender address
                 to: email, // Receiver address
                 subject: 'Signup Confirmation', // Subject
-                text: `You have successfully signedup for Aashray ${username}\n\nBest Regards,\nTeam Aashray`
+                text: `You have successfully signedup for Aashray ,${username}\n\nBest Regards,\nTeam Aashray`
               };
 
               transporter.sendMail(mailOptions, (error, info) => {

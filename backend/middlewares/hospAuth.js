@@ -50,7 +50,7 @@ const HospAuth = async (req, res, next) => {
         const newAccessToken = genAccessToken(payload);
 
         req.access = newAccessToken;
-        req.user = user ; // payload??
+        req.user =  user // payload??
         return next();
       } catch (refreshErr) {
         console.log("Error in refresh token", refreshErr);

@@ -1,4 +1,4 @@
-let {HospMod} = require('../models/hosp.model')
+let {HospMod} = require('../models/hospital.model')
 let {ReqRescMod} = require('../models/reqResc.model')
 let {RescMod} = require('../models/resc.model')
 let {locnDecoder} = require('../middlewares/locnDecoder')
@@ -9,12 +9,12 @@ let axios = require('axios')
 
 
 const acceptReq=async (req,res)=>{
-    let niceHosp = req.body.hospId
+    let niceHosp = req.user._id
     let reqRescId = req.body.reqId
 
     try{
 
-        let validReq = await ReqRescMod.findById(reqRescId)
+        let validReq = await RescMod.findById(reqRescId)
         if(!validReq) return res.json({
             message : "Request accepted by other hospital",
         })
@@ -51,7 +51,7 @@ const acceptReq=async (req,res)=>{
 }
 
 const updateStatus = async (req,res)=>{
-    let reqId = req.body.reqId
+    let reqId = req.user._id
     try{
         let updatedStatus = await RescMod.findByIdAndUpdate(
             reqId,
@@ -61,11 +61,11 @@ const updateStatus = async (req,res)=>{
                 }
             }
         )
-        console.log(updateStatus)
+        console.log(updatedStatus)
         res.send(updatedStatus)
     }catch(err){
         console.log(err)
         res.send(err)
     }
 }
-module.exports={regHosp,acceptReq,updateStatus}
+module.exports={acceptReq,updateStatus}
