@@ -38,8 +38,8 @@ let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js'
 
     const newHosp = new HospMod({
         username ,
-        password: hashedPass ,gmap,
-        email, contactNumber,location,address,
+        password: hashedPass ,
+        email, contactNumber,gmap,address,location,
         licenseNumber,services,
         availableBeds: parseInt(availableBeds||"0",10)
     })
@@ -71,6 +71,9 @@ let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js'
                 auth: {
                   user: 'aashray43@gmail.com', // Your email
                   pass: 'ugyh baxz cnmo dcyk' // Your app password
+                },
+                tls: {
+                  rejectUnauthorized: false
                 }
               });
 
@@ -120,8 +123,8 @@ const login = async (req, res) =>{
         username:loginUser.username,
         role:"hospital"
     }
-        let accessToken =   genAccessToken(payload)
-        let refreshToken =  genRefreshToken(payload)
+        let accessToken = await genAccessToken(payload)
+        let refreshToken = await genRefreshToken(payload)
 
         res.cookie('refreshToken',refreshToken,{
             httpOnly:false, 
@@ -133,7 +136,7 @@ const login = async (req, res) =>{
         
         res.json({
             "message":"Login Successfull",
-            "accessToken":accessToken
+            "accessToken": accessToken
         })
 
     }catch(err){
@@ -190,7 +193,7 @@ const addslot = async (req, res) => {
       return res.status(400).json({ message: "Slot date & time is required" });
     }
 
-    const hospital = req.hosp;
+    const hospital = req.user;
     if (!hospital) {
       return res.status(404).json({ message: "Hospital not found" });
     }
@@ -215,34 +218,32 @@ const addslot = async (req, res) => {
 //-------del slot --------------------------------------
 
 const deleteSlot = async (req, res) => {
-  try {
-    const { hospitalId, slotId } = req.params;
+    try {
+        
+        const { slotId } = req.params;
 
-    if (!slotId) {
-      return res.status(400).json({ message: "Slot ID is required" });
-    }
+        
+        const hospital = req.user;
 
-    const hospital = await HospMod.findById(hospitalId);
-    if (!hospital) {
-      return res.status(404).json({ message: "Hospital not found" });
-    }
+        const slotIndex = hospital.slots.findIndex(slot => slot._id.toString() === slotId);
 
-    const slotIndex = hospital.slots.findIndex(slot => slot._id.toString() === slotId);
-    if (slotIndex === -1) {
-      return res.status(404).json({ message: "Slot not found" });
-    }
+        if (slotIndex === -1) {
+            return res.status(404).json({ message: "Slot not found in this hospital" });
+        }
 
-    if (hospital.slots[slotIndex].isBooked) {
-      return res.status(403).json({ message: "Cannot delete booked slot" });
-    }
+        if (hospital.slots[slotIndex].isBooked) {
+            return res.status(403).json({ message: "Cannot delete a slot that is already booked" });
+        }
 
-    hospital.slots.splice(slotIndex, 1);
-    await hospital.save();
+        // 4. Remove the slot and save
+        hospital.slots.splice(slotIndex, 1);
+        await hospital.save();
 
-    res.status(200).json({ message: "Slot deleted successfully", hospital });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error deleting slot", error: err });
+        res.status(200).json({ message: "Slot deleted successfully" });
+
+    } catch (err) {
+        console.error("Error in deleteSlot:", err);
+        res.status(500).json({ message: "Error deleting slot", error: err.message });
     }
 };
 
@@ -269,7 +270,7 @@ const searchHosp = async(req,res) => {
 
 const getHosp = async(req,res) => {
     try {
-        res.json(req.hosp);
+        res.json(req.user);
     }
     catch(err){
         console.log("error in getting hosp data")

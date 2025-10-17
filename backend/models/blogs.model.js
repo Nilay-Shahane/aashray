@@ -15,12 +15,12 @@ const blogSchema = mongoose.Schema({
     },
     author: { 
         type: mongoose.Schema.Types.ObjectId, 
-        ref: 'User' 
+        ref: 'UserModel' 
     },
     likes: [
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
+            ref: 'UserModel'
         }
     ],
     image: {

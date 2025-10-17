@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const {UserModel }= require('../models/user.model');
+const { UserModel } = require('../models/user.model.js');
 let {genAccessToken,genRefreshToken} = require('../middlewares/generateToken.js')
 require('dotenv').config()
 //auth------------------------------------------------------------------
